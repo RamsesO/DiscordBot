@@ -42,100 +42,60 @@ public class BotListener extends ListenerAdapter{
 		populateResponseTable();
 	}
 	
+
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
 		
 		Member member = event.getMember();
-		User author = event.getAuthor();
-	
-
-		if(author.isBot())
+		User user = event.getMember().getUser();
+		
+		if(user.isBot())
 			return;
 		
 		TextChannel textChannel = event.getTextChannel();
 		Guild guild = event.getGuild();
 		
-		String messRecvd = event.getMessage().getContent().trim().toLowerCase();
+		String messRecvd = event.getMessage().getContent().trim().toLowerCase();	
+		String[] messArr = messRecvd.split(" ");
 		
-		if(responseTable.containsKey(messRecvd)) {
+		if(messRecvd.equals("fuck you")) {
+			String response = event.getAuthor().getAsMention() + " fuck you too";
+			String botMessage = "fuck you sent to '" + user.getName() + "'";
 			
-			ArrayList<String> responses = responseTable.get(messRecvd);
-			String response;
+			botResponse.sendChannelMessage(guild, textChannel, response);
+			botResponse.sendChannelMessage(guild, Config.botLogID, botMessage);
+			//event.getChannel().sendMessage( + response).queue();
+		}
+		
+		
+		if(messRecvd.startsWith("fuck you") && messArr.length == 3) {
+			String response = "yeah fuck you " + messArr[2];
+			String botMessage = "fuck you sent to '" + messArr[2] + "'";
 			
-			if(responses.size() == 1) {
-				response = responses.get(0);
-			}
-			else {
-				int rand, responseIndex;
-				
-				rand = numGen.nextInt(responses.size());
-				responseIndex = responses.size() % rand;
-				response = responses.get(responseIndex);
-				
-			}
+			botResponse.sendChannelMessage(guild, textChannel, response);
+			botResponse.sendChannelMessage(guild, Config.botLogID, botMessage);
+			//event.getChannel().sendMessage(response).queue();
+		}
+		
+		if(messRecvd.equals("!shutdown") && member.isOwner()) {
+			String response = "okay T___T shutting Down...";
+			String botMessage = "Shut Down.";
 			
-			if(response.contains(Regex.author)) {
-				response.replaceAll(Regex.author, author.getAsMention());
+			botResponse.sendChannelMessage(guild, Config.botLogID, botMessage);
+			botResponse.sendChannelMessage(guild, textChannel, response);
+			
+			try {
+				Thread.sleep(400);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			if(response.contains(Regex.personRef)) {
-				
+			finally {
+			System.exit(-1);
 			}
 		}
+		
 	}
-	
-//	@Override
-//	public void onMessageReceived(MessageReceivedEvent event) {
-//		
-//		Member member = event.getMember();
-//		User user = event.getMember().getUser();
-//		
-//		if(user.isBot())
-//			return;
-//		
-//		TextChannel textChannel = event.getTextChannel();
-//		Guild guild = event.getGuild();
-//		
-//		String messRecvd = event.getMessage().getContent().trim().toLowerCase();	
-//		String[] messArr = messRecvd.split(" ");
-//		
-//		if(messRecvd.equals("fuck you")) {
-//			String response = event.getAuthor().getAsMention() + " fuck you too";
-//			String botMessage = "fuck you sent to '" + user.getName() + "'";
-//			
-//			botResponse.sendChannelMessage(guild, textChannel, response);
-//			botResponse.sendChannelMessage(guild, Config.botLogID, botMessage);
-//			//event.getChannel().sendMessage( + response).queue();
-//		}
-//		
-//		
-//		if(messRecvd.startsWith("fuck you") && messArr.length == 3) {
-//			String response = "yeah fuck you " + messArr[2];
-//			String botMessage = "fuck you sent to '" + messArr[2] + "'";
-//			
-//			botResponse.sendChannelMessage(guild, textChannel, response);
-//			botResponse.sendChannelMessage(guild, Config.botLogID, botMessage);
-//			//event.getChannel().sendMessage(response).queue();
-//		}
-//		
-//		if(messRecvd.equals("!shutdown") && member.isOwner()) {
-//			String response = "okay T___T shutting Down...";
-//			String botMessage = "Shut Down.";
-//			
-//			botResponse.sendChannelMessage(guild, Config.botLogID, botMessage);
-//			botResponse.sendChannelMessage(guild, textChannel, response);
-//			
-//			try {
-//				Thread.sleep(400);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			finally {
-//			System.exit(-1);
-//			}
-//		}
-//		
-//	}
 	
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent event) {
